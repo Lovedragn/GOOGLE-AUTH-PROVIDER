@@ -1,10 +1,15 @@
 @import "tailwindcss";
 
-:root{
-    
+:root {
 }
-@layer utilities{
-    .btn{
-        @apply flex px-6 py-2 text-sm rounded bg-blue-700 hover:bg-blue-800 text-white;
-    }
+
+@layer base {
+  p {
+    @apply text-2xl;
+  }
+}
+@layer components {
+  .btn {
+    @apply px-4 py-2 text-xs items-center inline-flex leading-3 font-medium rounded bg-blue-700 hover:bg-red-600 text-white;
+  }
 }

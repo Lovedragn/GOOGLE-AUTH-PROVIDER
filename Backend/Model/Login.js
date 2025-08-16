@@ -6,6 +6,7 @@ configDotenv();
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_API_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
+
 export const Login = async ({ sub, email, name, picture }) => {
   try {
     if (!sub) throw new Error("sub is missing!");
