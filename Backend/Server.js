@@ -31,14 +31,15 @@ app.post("/auth/login", async (req, res) => {
     const { email, sub, name , picture } = payload; // sub = Google's stable user ID
 
     // TODO: upsert user in your SQL DB here (optional but recommended)
-    Login({sub, email , name , picture});
+    const address= await Login({sub, email , name , picture});
     // ✅ issue your own app token
     const token = jwt.sign(
       { googleId: sub, email, name },
       process.env.JWT_SECRET_KEY,          // set this in your .env
       { expiresIn: "12d" }
     );
-    return res.json({ token });
+
+    return res.json({ token , address});
   } catch (err) {
     console.error("Google login error:", err);
     return res.status(401).json({ message: "Invalid Google token" });

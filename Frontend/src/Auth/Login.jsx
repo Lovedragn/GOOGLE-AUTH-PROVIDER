@@ -6,7 +6,8 @@ const Login = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
   const handleLogout = () => {
     googleLogout();
-    localStorage.removeItem("token");
+    localStorage.clear();
+    
     setIsLoggedIn(false);
   };
  const handleLoginSuccess = async (credentialResponse) => {
@@ -22,9 +23,11 @@ const Login = () => {
     });
 
     const data = await res.json();
+    
     localStorage.setItem("token", data.token);
+    localStorage.setItem("address_url", data.address);
     setIsLoggedIn(true); // update UI immediately
-    navigate("/home");
+    navigate(`/:${localStorage.getItem("address_url")}`); // navigate to the user's page
   } catch (err) {
     console.error("Login failed:", err);
   }

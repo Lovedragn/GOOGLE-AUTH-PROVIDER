@@ -1,6 +1,6 @@
 import { configDotenv } from "dotenv";
 import { createClient } from "@supabase/supabase-js";
-
+import crypto from "crypto";
 configDotenv();
 
 const supabaseUrl = process.env.SUPABASE_URL;
@@ -17,7 +17,8 @@ export const Login = async ({ sub, email, name, picture }) => {
       .maybeSingle();
 
     if (fetchError) throw new Error(`Error fetching user: ${fetchError.message}`);
-    if (existingUser) return existingUser;
+
+    if (existingUser) return crypto.createHash("MD5").update(sub).digest("hex");
 
     // 2. Insert new user
     const { data: insertedRows, error: insertError } = await supabase
@@ -26,7 +27,8 @@ export const Login = async ({ sub, email, name, picture }) => {
       .maybeSingle();
 
     if (insertError) throw new Error(`Error creating user: ${insertError.message}`);
-    return 0;
+   
+    return crypto.createHash("sha256").update(sub).digest("hex");
   } catch (error) {
     console.error("Login error:", error);
     throw error;
