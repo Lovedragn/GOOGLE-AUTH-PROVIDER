@@ -36,6 +36,7 @@ const Login = () => {
         <GoogleLogin
           onSuccess={handleLoginSuccess}
           onError={() => console.log("Login Failed")}
+          useOneTap
         />
       ) : (
         <button onClick={handleLogout} className="btn">

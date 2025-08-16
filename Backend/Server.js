@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
 
+import {Login} from "./Model/Login.js";
+
 dotenv.config();
 
 const app = express();
@@ -25,17 +27,17 @@ app.post("/auth/login", async (req, res) => {
     });
 
     const payload = ticket.getPayload();
-    const { email, sub, name } = payload; // sub = Google's stable user ID
+
+    const { email, sub, name , picture } = payload; // sub = Google's stable user ID
 
     // TODO: upsert user in your SQL DB here (optional but recommended)
-
+    Login({sub, email , name , picture});
     // ✅ issue your own app token
     const token = jwt.sign(
       { googleId: sub, email, name },
       process.env.JWT_SECRET_KEY,          // set this in your .env
       { expiresIn: "12d" }
     );
-
     return res.json({ token });
   } catch (err) {
     console.error("Google login error:", err);
