@@ -27,7 +27,7 @@ const Login = () => {
     localStorage.setItem("token", data.token);
     localStorage.setItem("address_url", data.address);
     setIsLoggedIn(true); // update UI immediately
-    navigate(`/:${localStorage.getItem("address_url")}`); // navigate to the user's page
+    navigate(`/${localStorage.getItem("address_url")}`); // navigate to the user's page
   } catch (err) {
     console.error("Login failed:", err);
   }

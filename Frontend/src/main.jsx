@@ -9,7 +9,7 @@ const VITE_APP_GOOGLE_CLIENT_ID = import.meta.env.VITE_APP_GOOGLE_CLIENT_ID;
 const address = localStorage.getItem("address_url");
 const router = createBrowserRouter([
   { path: "/", element: <Navigate to={"auth/login"} replace /> },
-  { path: `/:${address? address:":id"}`, element: <App /> },
+  { path: `/:${address}`, element: <App /> },
   { path: "/auth/login", element: <Login /> },
   { path: "*", element: <Error /> },
 ]);
