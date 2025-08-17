@@ -1,6 +1,12 @@
 import { configDotenv } from "dotenv";
 import { createClient } from "@supabase/supabase-js";
-import crypto from "crypto";
+import { blake3 } from '@noble/hashes/blake3'
+
+function hashSubId(subId) {
+  const hash = blake3(new TextEncoder().encode(subId))
+  return Buffer.from(hash).toString('hex').slice(0, 16) // 8 bytes = 16 hex chars
+}
+
 configDotenv();
 
 const supabaseUrl = process.env.SUPABASE_URL;
@@ -16,10 +22,10 @@ export const Login = async ({ sub, email, name, picture }) => {
       .select("*")
       .eq("sub", sub)
       .maybeSingle();
-
+    const address = hashSubId(sub);
     if (fetchError) throw new Error(`Error fetching user: ${fetchError.message}`);
 
-    if (existingUser) return crypto.createHash("MD5").update(sub).digest("hex");
+    if (existingUser) return JSON.stringify({sub , email , name , picture , address});
 
     // 2. Insert new user
     const { data: insertedRows, error: insertError } = await supabase
@@ -29,7 +35,7 @@ export const Login = async ({ sub, email, name, picture }) => {
 
     if (insertError) throw new Error(`Error creating user: ${insertError.message}`);
    
-    return crypto.createHash("sha256").update(sub).digest("hex");
+    return  JSON.stringify({sub , email , name , picture});
   } catch (error) {
     console.error("Login error:", error);
     throw error;

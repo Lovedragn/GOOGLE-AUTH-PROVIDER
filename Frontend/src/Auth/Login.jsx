@@ -8,9 +8,9 @@ const Login = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
   useEffect(() => {
     if (isLoggedIn) {
-      const addressUrl = localStorage.getItem("address_url");
-      if (addressUrl) {
-        navigate(`/${addressUrl}`);
+      const {address} = JSON.parse(localStorage.getItem("user"));
+      if (address) {
+        navigate(`/${address}`);
       }
     }
   }, []);
@@ -34,10 +34,12 @@ const Login = () => {
 
       console.log("login success");
       const data = await res.json();
+
       localStorage.setItem("token", data.token);
-      localStorage.setItem("address_url", data.address);
+      localStorage.setItem("user",data.user);
+      
       setIsLoggedIn(true); // update UI immediately
-      navigate(`/:${localStorage.getItem("address_url")}`); // navigate to the user's page
+      navigate(`/:${JSON.parse(localStorage.getItem("user")).address}`); // navigate to the user's page
     } catch (err) {
       console.error("Login failed:", err);
     }

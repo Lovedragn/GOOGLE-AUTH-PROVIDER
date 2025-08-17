@@ -7,7 +7,7 @@ import Error from "./Components/Error.jsx";
 import Login from "./Auth/Login.jsx";
 
 const VITE_APP_GOOGLE_CLIENT_ID = import.meta.env.VITE_APP_GOOGLE_CLIENT_ID;
-const address = localStorage.getItem("address_url");
+const {address} = JSON.parse(localStorage.getItem("user"));
 
 const router = createBrowserRouter([
   { path: "/", element: <Navigate to={"auth/login"} replace /> },

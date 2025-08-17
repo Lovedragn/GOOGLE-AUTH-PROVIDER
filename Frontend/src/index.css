@@ -4,9 +4,17 @@
 }
 
 @layer base {
-  p {
-    @apply text-2xl;
-  }
+ h1{
+  @apply text-2xl font-medium;
+ }
+ h2{
+  @apply text-xl;
+ }
+ h3{
+@apply text-lg;
+ }p{
+  @apply text-sm ;
+ }
 }
 @layer components {
   .btn {

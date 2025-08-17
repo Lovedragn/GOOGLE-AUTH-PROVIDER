@@ -7,17 +7,18 @@
     process.env.SUPABASE_API_KEY
     );
 
-    export const getUserData = async (req, res) => {
+    export const getcontent = async (req, res) => {
     try {
         
-        const sub = req.user.sub; 
+        const sub = req.sub; 
     
         const { data, error } = await supabase
         .from("users")
-        .select("*")
+        .select("content")
         .eq("sub", sub)
         .single();
-           
+
+           if(error) throw Error("user get error");
         return res.json( data );
     } catch (err) {
         return res.status(500).json({ message: "Failed to fetch user data" });

@@ -22,7 +22,8 @@ const token = async (req, res) => {
     const { email, sub, name, picture } = payload; // sub = Google's stable user ID
 
     // TODO: upsert user in your SQL DB here (optional but recommended)
-    const address = await Login({ sub, email, name, picture });
+    const user = await Login({ sub, email, name, picture });
+
     // ✅ issue your own app token
     const token = jwt.sign(
       { sub, email, name },
@@ -30,23 +31,10 @@ const token = async (req, res) => {
       { expiresIn: "12d" }
     );
 
-    return res.json({ token, address });
+    return res.json({ token, user });
   } catch (err) {
     console.error("Google login error:", err);
     return res.status(401).json({ message: "Invalid Google token" });
-  }
-};
-export const verifyToken = (req, res, next) => {
-  try {
-    const token = req.headers["authorization"]?.split(" ")[1]; // Bearer <token>
-    if (!token) return res.status(401).json({ message: "No token provided" });
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-
-    req.user = decoded;
-    next(); 
-  } catch (err) {
-    return res.status(401).json({ message: "Invalid token" });
   }
 };
 

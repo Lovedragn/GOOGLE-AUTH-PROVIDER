@@ -4,23 +4,10 @@ const Navbar = () => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const token = localStorage.getItem("token"); // your app JWT
-      if (!token) return;
-
-      const res = await fetch("http://localhost:5000/user/get", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-
-      const data = await res.json();
-      console.log(data);
-      setUser(data);
-    };
-    fetchUser();
+    const stored = localStorage.getItem("user");
+    if (stored) {
+      setUser(JSON.parse(stored));
+    }
   }, []);
 
   return (
@@ -29,7 +16,7 @@ const Navbar = () => {
         <div className="flex w-full ">
           <h3>{user?.name}</h3>
         </div>
-        <div className="flex gap-5"> 
+        <div className="flex gap-5">
           <img
             src={user?.picture} // ✅ Google payload gives `picture`
             alt="Profile"
