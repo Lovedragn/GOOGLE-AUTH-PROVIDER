@@ -28,7 +28,7 @@ const Container = () => {
         })) 
         setdata(convert); // wrap single object if needed
 
-        console.log(res)
+        // console.log(res)
   
       } catch (err) {
         console.error("Fetch error:", err);
