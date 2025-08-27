@@ -10,7 +10,8 @@ const Container = () => {
   useEffect(() => {
     const call = async () => {
       try {
-        const datas = await fetch(import.meta.env.VITE_APP_PORT || "https://localhost:5000/db/get/tasks", {
+        const API_URL = import.meta.env.VITE_APP_PORT || "http://localhost:5000"
+        const datas = await fetch(`${API_URL}/db/get/tasks`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

@@ -8,10 +8,11 @@ const Forms = ({ close }) => {
 
   const uploads = async (e) => {
     e.preventDefault();
-    console.log(formdata);
 
     try {
-      const response = await fetch( import.meta.env.VITE_APP_PORT +"/db/add/tasks"|| "http://localhost:5000/db/add/tasks", {
+      const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+      const response = await fetch(`${API_BASE}/db/add/tasks`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -64,7 +65,10 @@ const Forms = ({ close }) => {
           >
             Submit
           </button>
-          <button onClick={()=>close(false)} className="btn w-full flex items-center h-8 justify-center">
+          <button
+            onClick={() => close(false)}
+            className="btn w-full flex items-center h-8 justify-center"
+          >
             Close
           </button>
         </div>
