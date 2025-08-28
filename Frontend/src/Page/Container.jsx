@@ -6,11 +6,10 @@ const Container = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [message, setMessage] = useState({ text: "", type: "" });
 
   const fetchTasks = async () => {
     try {
-      const API_URL = "http://localhost:5000"; // Temporarily use localhost for testing
+      const API_URL =await import.meta.env.VITE_APP_PORT || "http://localhost:5000";
 
       const response = await fetch(`${API_URL}/db/get/tasks`, {
         method: "POST",
@@ -37,7 +36,8 @@ const Container = () => {
 
   const handleDeleteTask = async (taskIndex) => {
     try {
-      const API_URL = "http://localhost:5000"; // Temporarily use localhost for testing
+      const API_URL =
+        import.meta.env.VITE_APP_PORT || "http://localhost:5000";
 
       const response = await fetch(`${API_URL}/db/delete/tasks`, {
         method: "DELETE",
@@ -52,20 +52,13 @@ const Container = () => {
       
       if (response.ok) {
         console.log("Task deleted successfully:", result.message);
-        setMessage({ text: "Task deleted successfully!", type: "success" });
         // Refresh the tasks after deletion
         await fetchTasks();
-        // Clear message after 3 seconds
-        setTimeout(() => setMessage({ text: "", type: "" }), 3000);
       } else {
         console.error("Failed to delete task:", result.message);
-        setMessage({ text: "Failed to delete task", type: "error" });
-        setTimeout(() => setMessage({ text: "", type: "" }), 3000);
       }
     } catch (err) {
       console.error("Delete error:", err);
-      setMessage({ text: "Error deleting task", type: "error" });
-      setTimeout(() => setMessage({ text: "", type: "" }), 3000);
     }
   };
 
@@ -75,24 +68,15 @@ const Container = () => {
 
   return (
     <div className="p-6">
-      {/* Message Display */}
-      {message.text && (
-        <div className={`fixed top-4 right-4 z-50 px-4 py-2 rounded-lg text-white ${
-          message.type === "success" ? "bg-green-600" : "bg-red-600"
-        }`}>
-          {message.text}
-        </div>
-      )}
-
-      {/* Form Modal */}
+ 
       {showForm && (
         <div className="absolute inset-0 flex items-center justify-center z-50">
           <div className="absolute inset-0 bg-black/70"></div>
-          <Form close={setShowForm} onTaskAdded={fetchTasks} />
+          <Form close={setShowForm} />
         </div>
       )}
 
-      
+   
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold">Your Tasks</h1>
         <button
@@ -103,7 +87,7 @@ const Container = () => {
         </button>
       </div>
 
-    
+
       {loading ? (
         <h1 className="text-center text-lg">Loading...</h1>
       ) : data.length === 0 ? (
