@@ -3,7 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 import token from "./token.js";
-import { gettasks , addtasks } from "./Model/user.js";
+import { gettasks , addtasks, deletetasks } from "./Model/user.js";
 
 
 dotenv.config();
@@ -15,6 +15,7 @@ app.use(express.json());
 app.post("/auth/login", token); // Google OAuth login
 app.post("/db/get/tasks", gettasks); // fetch tasks
 app.post("/db/add/tasks" ,addtasks );
+app.delete("/db/delete/tasks", deletetasks); // delete tasks
 
 const PORT = process.env.PORT || 5000;  // 5000 for local dev
 app.listen(PORT, () => console.log("Server is running on port 5000"));

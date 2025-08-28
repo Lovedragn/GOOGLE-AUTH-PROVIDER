@@ -3,72 +3,126 @@ import Cards from "../Components/Cards";
 import Form from "../Components/Form";
 
 const Container = () => {
-  const [data, setdata] = useState([]);
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showform, setshowform] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [message, setMessage] = useState({ text: "", type: "" });
+
+  const fetchTasks = async () => {
+    try {
+      const API_URL = "http://localhost:5000"; // Temporarily use localhost for testing
+
+      const response = await fetch(`${API_URL}/db/get/tasks`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sub: JSON.parse(localStorage.getItem("user")).sub,
+        }),
+      });
+
+      const res = await response.json();
+      const converted = res.title.map((_, index) => ({
+        title: res.title[index],
+        desc: res.desc[index],
+        date: res.date[index],
+      }));
+
+      setData(converted);
+    } catch (err) {
+      console.error("Fetch error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteTask = async (taskIndex) => {
+    try {
+      const API_URL = "http://localhost:5000"; // Temporarily use localhost for testing
+
+      const response = await fetch(`${API_URL}/db/delete/tasks`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sub: JSON.parse(localStorage.getItem("user")).sub,
+          taskIndex: taskIndex,
+        }),
+      });
+
+      const result = await response.json();
+      
+      if (response.ok) {
+        console.log("Task deleted successfully:", result.message);
+        setMessage({ text: "Task deleted successfully!", type: "success" });
+        // Refresh the tasks after deletion
+        await fetchTasks();
+        // Clear message after 3 seconds
+        setTimeout(() => setMessage({ text: "", type: "" }), 3000);
+      } else {
+        console.error("Failed to delete task:", result.message);
+        setMessage({ text: "Failed to delete task", type: "error" });
+        setTimeout(() => setMessage({ text: "", type: "" }), 3000);
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
+      setMessage({ text: "Error deleting task", type: "error" });
+      setTimeout(() => setMessage({ text: "", type: "" }), 3000);
+    }
+  };
 
   useEffect(() => {
-    const call = async () => {
-      try {
-        const API_URL = import.meta.env.VITE_APP_PORT || "http://localhost:5000"
-        const datas = await fetch(`${API_URL}/db/get/tasks`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            sub: JSON.parse(localStorage.getItem("user")).sub,
-          }),
-        });
-        const res = await datas.json();
-        const convert  = res.title.map((item , index)=>({
-          title : res.title[index],
-          desc : res.desc[index],
-          date:res.date[index]
-        })) 
-        setdata(convert); // wrap single object if needed
-
-        // console.log(res)
-  
-      } catch (err) {
-        console.error("Fetch error:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    call();
+    fetchTasks();
   }, []);
 
   return (
-    <div className="flex gap-5 justify-center">
-      <div>
-        {showform ? (
-          <div className="absolute flex items-center justify-center w-full h-screen top-0 left-0">
-            <div className="bg-black/70 h-screen w-full z-1 absolute"></div>
-            <Form close={setshowform} />
-          </div>
-        ) : (
-          ""
-        )}
-        <button className="btn " onClick={() => setshowform(!showform)}>
-          Add+
+    <div className="p-6">
+      {/* Message Display */}
+      {message.text && (
+        <div className={`fixed top-4 right-4 z-50 px-4 py-2 rounded-lg text-white ${
+          message.type === "success" ? "bg-green-600" : "bg-red-600"
+        }`}>
+          {message.text}
+        </div>
+      )}
+
+      {/* Form Modal */}
+      {showForm && (
+        <div className="absolute inset-0 flex items-center justify-center z-50">
+          <div className="absolute inset-0 bg-black/70"></div>
+          <Form close={setShowForm} onTaskAdded={fetchTasks} />
+        </div>
+      )}
+
+      
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-semibold">Your Tasks</h1>
+        <button
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+          onClick={() => setShowForm(!showForm)}
+        >
+          Add +
         </button>
       </div>
+
+    
       {loading ? (
-        <h1>Loading..</h1>
+        <h1 className="text-center text-lg">Loading...</h1>
       ) : data.length === 0 ? (
-        <h1>No tasks found</h1>
+        <h1 className="text-center text-lg text-gray-500">
+          No tasks found
+        </h1>
       ) : (
-        data.map((item, index) => (
-          
-          <Cards
-            key={index}
-            title={item.title}
-            desc={item.desc}
-            date={item.date}
-          />
-        ))
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {data.map((item, index) => (
+            <Cards
+              key={index}
+              title={item.title}
+              desc={item.desc}
+              date={item.date}
+              taskIndex={index}
+              onDelete={handleDeleteTask}
+            />
+          ))}
+        </div>
       )}
     </div>
   );

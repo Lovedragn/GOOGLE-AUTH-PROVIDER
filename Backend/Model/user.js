@@ -76,3 +76,41 @@ export const addtasks = async (req, res) => {
     return res.status(500).json({ message: "failed", error: err.message });
   }
 };
+
+export const deletetasks = async (req, res) => {
+  try {
+    const { sub, taskIndex } = req.body;
+    
+    // Get the current user's tasks
+    const { data: existing, error: fetcherror } = await supabase
+      .from("tasks")
+      .select("*")
+      .eq("sub", sub)
+      .single();
+
+    if (fetcherror) throw fetcherror;
+    if (!existing) throw new Error("User not found");
+
+    // Remove the task at the specified index
+    const updatedTitle = existing.title.filter((_, index) => index !== taskIndex);
+    const updatedDesc = existing.desc.filter((_, index) => index !== taskIndex);
+    const updatedDate = existing.date.filter((_, index) => index !== taskIndex);
+
+    // Update the database with the filtered arrays
+    const { error: updateError } = await supabase
+      .from("tasks")
+      .update({
+        title: updatedTitle,
+        desc: updatedDesc,
+        date: updatedDate,
+      })
+      .eq("sub", sub);
+
+    if (updateError) throw updateError;
+
+    return res.status(200).json({ message: "Task deleted successfully" });
+  } catch (err) {
+    console.error("Delete error:", err);
+    return res.status(500).json({ message: "Failed to delete task", error: err.message });
+  }
+};

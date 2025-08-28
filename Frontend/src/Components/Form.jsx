@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const Forms = ({ close }) => {
+const Forms = ({ close, onTaskAdded }) => {
   const [formdata, setformdata] = useState({
     title: "",
     desc: "",
@@ -10,7 +10,7 @@ const Forms = ({ close }) => {
     e.preventDefault();
 
     try {
-      const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const API_BASE = import.meta.env.VITE_APP_PORT || "http://localhost:5000";
 
       const response = await fetch(`${API_BASE}/db/add/tasks`, {
         method: "POST",
@@ -23,6 +23,17 @@ const Forms = ({ close }) => {
 
       const result = await response.json();
       console.log("Server response:", result);
+      
+      if (response.ok) {
+        // Clear form data
+        setformdata({ title: "", desc: "" });
+        // Refresh the task list
+        if (onTaskAdded) {
+          onTaskAdded();
+        }
+        // Close the form
+        close(false);
+      }
     } catch (err) {
       console.error("Upload failed:", err);
     }
