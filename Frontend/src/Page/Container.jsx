@@ -75,7 +75,6 @@ const Container = () => {
           <Form close={setShowForm} />
         </div>
       )}
-
    
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold">Your Tasks</h1>
