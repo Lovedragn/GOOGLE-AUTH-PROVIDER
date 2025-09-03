@@ -1,20 +1,8 @@
 {
   "rewrites": [
-    { "source": "/", "destination": "/auth/login" },
-    { "source": "/auth/login", "destination": "/auth/login" },
-    { "source": "/:address", "destination": "/index.html" }
-  ],
-  "redirects": [
     {
-      "source": "/auth/login",
-      "destination": "/auth/login",
-      "statusCode": 301
+      "source": "/(.*)",
+      "destination": "/"
     }
-  ],
-  "cleanUrls": true,
-  "trailingSlash": false,
-  "fallback": {
-    "source": "/(.*)",
-    "destination": "/index.html"
-  }
+  ]
 }
