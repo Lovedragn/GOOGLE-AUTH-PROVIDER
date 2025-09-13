@@ -9,9 +9,17 @@ import Login from "./Auth/Login.jsx";
 const VITE_APP_GOOGLE_CLIENT_ID = import.meta.env.VITE_APP_GOOGLE_CLIENT_ID;
 
 const storedUser = localStorage.getItem("user");
-const user = storedUser ? JSON.parse(storedUser) : {};
-const { address } = user;
+let user = {};
 
+try {
+  if (storedUser && storedUser !== "undefined") {
+    user = JSON.parse(storedUser);
+  }
+} catch (e) {
+  console.warn("Failed to parse user from localStorage:", e);
+}
+
+const { address } = user;
 const router = createBrowserRouter([
   { path: "/", element: <Navigate to={"auth/login"} replace /> },
   { path: `/:${address}`, element: <App /> },
