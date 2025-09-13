@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Cards from "../Components/Cards";
 import Form from "../Components/Form";
+import { getStoredUser } from "../utils/localStorage";
 
 const Container = () => {
   const [data, setData] = useState([]);
@@ -10,12 +11,20 @@ const Container = () => {
   const fetchTasks = async () => {
     try {
       const API_URL =await import.meta.env.VITE_APP_PORT || "http://localhost:5000";
+      
+      // Safely get user from localStorage
+      const user = getStoredUser();
+      if (!user || !user.sub) {
+        console.error("No valid user data found in localStorage");
+        setLoading(false);
+        return;
+      }
 
       const response = await fetch(`${API_URL}/db/get/tasks`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          sub: JSON.parse(localStorage.getItem("user")).sub,
+          sub: user.sub,
         }),
       });
 
@@ -38,12 +47,19 @@ const Container = () => {
     try {
       const API_URL =
         import.meta.env.VITE_APP_PORT || "http://localhost:5000";
+      
+      // Safely get user from localStorage
+      const user = getStoredUser();
+      if (!user || !user.sub) {
+        console.error("No valid user data found in localStorage");
+        return;
+      }
 
       const response = await fetch(`${API_URL}/db/delete/tasks`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          sub: JSON.parse(localStorage.getItem("user")).sub,
+          sub: user.sub,
           taskIndex: taskIndex,
         }),
       });

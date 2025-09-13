@@ -4,30 +4,40 @@ import { createBrowserRouter, Navigate, RouterProvider, useNavigate } from "reac
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import App from "./App.jsx";
 import Error from "./Components/Error.jsx";
+import ErrorBoundary from "./Components/ErrorBoundary.jsx";
 import Login from "./Auth/Login.jsx";
+import { getStoredUser } from "./utils/localStorage";
 
 const VITE_APP_GOOGLE_CLIENT_ID = import.meta.env.VITE_APP_GOOGLE_CLIENT_ID;
 
-const storedUser = localStorage.getItem("user");
-let user = {};
-
-try {
-  if (storedUser && storedUser !== "undefined") {
-    user = JSON.parse(storedUser);
-  }
-} catch (e) {
-  console.warn("Failed to parse user from localStorage:", e);
-}
-
-const { address } = user;
+const user = getStoredUser();
+const address = user?.address || null;
 const router = createBrowserRouter([
-  { path: "/", element: <Navigate to={"auth/login"} replace /> },
-  { path: `/:${address}`, element: <App /> },
-  { path: "/auth/login", element: <Login /> },
-  { path: "*", element: <Error /> },
+  { 
+    path: "/", 
+    element: <Navigate to={"auth/login"} replace />,
+    errorElement: <ErrorBoundary><Error /></ErrorBoundary>
+  },
+  { 
+    path: `/:${address}`, 
+    element: <App />,
+    errorElement: <ErrorBoundary><Error /></ErrorBoundary>
+  },
+  { 
+    path: "/auth/login", 
+    element: <Login />,
+    errorElement: <ErrorBoundary><Error /></ErrorBoundary>
+  },
+  { 
+    path: "*", 
+    element: <Error />,
+    errorElement: <ErrorBoundary><Error /></ErrorBoundary>
+  },
 ]);
 createRoot(document.getElementById("root")).render(
-  <GoogleOAuthProvider clientId={VITE_APP_GOOGLE_CLIENT_ID}>
-    <RouterProvider router={router} />
-  </GoogleOAuthProvider>
+  <ErrorBoundary>
+    <GoogleOAuthProvider clientId={VITE_APP_GOOGLE_CLIENT_ID}>
+      <RouterProvider router={router} />
+    </GoogleOAuthProvider>
+  </ErrorBoundary>
 );
