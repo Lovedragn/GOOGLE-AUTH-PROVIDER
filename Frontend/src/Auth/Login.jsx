@@ -38,7 +38,7 @@ const Login = () => {
 
       localStorage.setItem("token", data.token);
       localStorage.setItem("user",data.user);
-      
+
       setIsLoggedIn(true); // update UI immediately
       navigate(`/:${JSON.parse(localStorage.getItem("user")).address}`); // navigate to the user's page
     } catch (err) {
